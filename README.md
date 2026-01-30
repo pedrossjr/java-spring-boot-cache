@@ -24,7 +24,7 @@ aplicação.
 
 - IntelliJ IDEA (Community Edition)
 - PgAdmin4
-- Insomnia
+- Postman
 - Git
 - GitHub
 - Docker Desktop 
@@ -82,7 +82,7 @@ Write-Around
 - Java 17+
 - IDE de sua preferência
 - Maven instalado
-- Insomnia para testes dos endpoints
+- Postman para testes dos endpoints
 - Docker Desktop para uso do PostgreSQL, PgAdmin4 e Redis
 
 #### 2. Clonar o repositório
@@ -208,3 +208,4 @@ diretamente do cache, sem executar o método novamente.
 Fique à vontade para abrir issues e fazer sugestões ao projeto. Melhorias
 sempre são bem-vindas e meu objetio é compartilhar conhecimento com a
 linguagem Java!
+
