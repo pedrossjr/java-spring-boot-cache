@@ -3,6 +3,7 @@ package io.github.pedrossjr.cache.controllers;
 import io.github.pedrossjr.cache.entities.Produto;
 import io.github.pedrossjr.cache.exception.ProdutoNotFoundException;
 import io.github.pedrossjr.cache.services.ProdutoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,13 +12,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/produtos")
+@RequiredArgsConstructor
 public class ProdutoController {
 
     private final ProdutoService produtoService;
-
-    public ProdutoController(ProdutoService produtoService) {
-        this.produtoService = produtoService;
-    }
 
     @PostMapping("/adicionar")
     @ResponseStatus(HttpStatus.CREATED)
@@ -45,5 +43,4 @@ public class ProdutoController {
     public void excluirId(@PathVariable String sku) throws ProdutoNotFoundException {
         produtoService.delete(sku);
     }
-
 }

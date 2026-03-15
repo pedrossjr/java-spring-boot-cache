@@ -3,6 +3,8 @@ package io.github.pedrossjr.cache.services;
 import io.github.pedrossjr.cache.entities.Produto;
 import io.github.pedrossjr.cache.exception.ProdutoNotFoundException;
 import io.github.pedrossjr.cache.repositories.ProdutoRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,23 +13,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
 
-
     static final String cacheName = "cache-produto";
     static final String cacheKey = "";
 
-    public ProdutoService(ProdutoRepository produtoRepository) {
-        this.produtoRepository = produtoRepository;
-    }
-
-    // Com o a anotation @CacheEvict habilitada, logo ao atualizar o produto o cache é limpo
-    // atualizando automaticamente a lista de produtos no cache.
-    // Se não é utilizado o time para limpeza do cache, é uma boa estratégia para atualizar os dados no cache
-    // logo após adicionar um novo registro.
-    // @CacheEvict(value = cacheName, key = cacheKey)
+    // Com a anotation @CacheEvict habilitada, ao atualizar o produto, o cache é limpo, atualizando automaticamente
+    // a lista de produtos no cache.
+    // Não utilizar o time para limpeza do cache é uma boa estratégia. Sendo mais interessante quando for realizado
+    // o cadastro, atualização ou exclusão de um produto.
+    @CacheEvict(value = cacheName, key = cacheKey)
     @Transactional
     public Produto add(Produto produto ) throws ProdutoNotFoundException {
         verifyByExists(produto.getSku());
@@ -37,29 +35,27 @@ public class ProdutoService {
     @Cacheable(value = cacheName, key = cacheKey)
     @Transactional(readOnly = true)
     public List<Produto> listAll(){
-        System.out.println("Se esta linha for impressa, significa que a consulta está sendo realizada no banco de dados.");
-        System.out.println("As próximas consultas durantes os próximos 15 segundos serão realizadas no cache do Redis.");
+        System.out.println("Consulta realizada no banco de dados.");
+        System.out.println("Durantes os próximos 15 segundos serão realizadas no cache do Redis.");
         return produtoRepository.findAll();
     }
 
     @Cacheable(value = cacheName, key = cacheKey)
     @Transactional(readOnly = true)
     public Optional<Produto> listId(String sku) {
-        System.out.println("Se esta linha for impressa, significa que a consulta está sendo realizada no banco de dados.");
-        System.out.println("As próximas consultas durantes os próximos 15 segundos serão realizadas no cache do Redis.");
+        System.out.println("Consulta realizada no banco de dados.");
+        System.out.println("Durantes os próximos 15 segundos serão realizadas no cache do Redis.");
         return produtoRepository.findById(sku);
     }
 
-    // Mesmo caso da inclusão porém, na atualização de um produto
-    // @CacheEvict(value = cacheName, key = cacheKey)
+    @CacheEvict(value = cacheName, key = cacheKey)
     @Transactional
     public Produto updateId(Produto produto) throws ProdutoNotFoundException {
         verifyByExists(produto.getSku());
         return produtoRepository.save(produto);
     }
 
-    // Mesmo caso da inclusão porém, na exclusão de um produto
-    // @CacheEvict(value = cacheName, key = cacheKey)
+    @CacheEvict(value = cacheName, key = cacheKey)
     @Transactional
     public void delete(String sku) throws ProdutoNotFoundException {
         verifyByExists(sku);
@@ -70,5 +66,4 @@ public class ProdutoService {
         return produtoRepository.findById(sku)
                 .orElseThrow(() -> new ProdutoNotFoundException(sku));
     }
-
 }
